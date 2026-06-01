@@ -4,7 +4,7 @@ import sys
 import pygame
 
 # AUTONOMOUS DRONE LANDING with a PID controller.
-# the drone falls under gravity and gets pushed around by random wind. a PID
+# the drone falls (just decrease alltitude lol)  under gravity and gets pushed around by random wind. a PID
 # controller works out how much thrust each side needs to keep it level and
 # bring it down gently onto the landing pad. you can drag the pad with the
 # mouse and the drone will chase it and land.
@@ -27,7 +27,7 @@ class PID:
         self.integral = 0
 
     def step(self, error):
-        self.integral = max(-200, min(200, self.integral + error))  # clamp windup
+        self.integral = max(-200, min(200, self.integral + error))  
         deriv = error - self.prev
         self.prev = error
         return self.kp * error + self.ki * self.integral + self.kd * deriv
@@ -53,24 +53,24 @@ while running:
         if e.type == pygame.QUIT:
             running = False
         elif e.type == pygame.MOUSEMOTION and e.buttons[0]:
-            pad_x = max(60, min(W - 60, e.pos[0]))  # drag the pad
+            pad_x = max(60, min(W - 60, e.pos[0]))  # draggingg the pad
 
     if not landed:
-        # ---- the controller decides what to do ----
+        
         ex = pad_x - x                      # how far off horizontally
         ey = (pad_y - 30) - y               # how far above the pad we want to be
         want_tilt = -pid_x.step(ex) * 0.04  # lean toward the pad
         want_tilt = max(-0.5, min(0.5, want_tilt))
 
-        # vertical thrust to control the descent (aim for a slow drop)
+        # vertical thrust to control descentt
         thrust = GRAV + pid_y.step(ey) * 0.02
         thrust = max(0, min(0.5, thrust))
 
-        # level-out correction so it doesnt flip
+        
         tilt += (pid_level.step(want_tilt - tilt)) * 0.02
         tilt = max(-0.6, min(0.6, tilt))
 
-        # apply physics: thrust pushes opposite the tilt, gravity pulls down
+        # my favorite part applying physics: thrust pushes opposite the tilt, gravity pulls down
         vx += thrust * tilt * 6
         vy += GRAV - thrust
         # random wind gusts
@@ -99,7 +99,7 @@ while running:
     pygame.draw.circle(screen, (240, 240, 80), (int(left[0]), int(left[1])), 7)
     pygame.draw.circle(screen, (240, 240, 80), (int(right[0]), int(right[1])), 7)
 
-    # HUD
+    # ui
     msg = "LANDED softly!" if landed else f"vy {vy:+.1f}  tilt {tilt:+.2f}  err_x {pad_x-x:+.0f}"
     col = (120, 240, 150) if landed else (220, 220, 220)
     screen.blit(font.render(msg, True, col), (16, 16))
