@@ -2,6 +2,8 @@ import math
 import random
 import sys
 import pygame
+# DISCLAIMER , most of the comments has been added by Ai as my code didnt have much comments and i told the Ai to explain the code , also remove dead commented code
+
 
 # AUTONOMOUS DRONE LANDING with a PID controller.
 # the drone falls (just decrease alltitude lol)  under gravity and gets pushed around by random wind. a PID
